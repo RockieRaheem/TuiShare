@@ -10,6 +10,8 @@ export default function SupporterRegister() {
     name: "",
     email: "",
     country: "",
+    password: "",
+    confirmPassword: "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,14 +37,29 @@ export default function SupporterRegister() {
       });
       return;
     }
+    if (!form.password || form.password.length < 6) {
+      setToast({
+        message: "Password must be at least 6 characters.",
+        type: "error",
+      });
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setToast({
+        message: "Passwords do not match.",
+        type: "error",
+      });
+      return;
+    }
     setLoading(true);
     setToast(null);
 
     try {
+      const { confirmPassword, ...submitForm } = form;
       const res = await fetch("/api/supporter/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(submitForm),
       });
       const result = await res.json();
       if (result.success) {
@@ -52,6 +69,8 @@ export default function SupporterRegister() {
           name: "",
           email: "",
           country: "",
+          password: "",
+          confirmPassword: "",
         });
       } else {
         setToast({
@@ -114,6 +133,26 @@ export default function SupporterRegister() {
                 value={form.country}
                 onChange={handleChange}
                 required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="border p-3 rounded w-full"
+                value={form.password}
+                onChange={handleChange}
+                required
+                minLength={6}
+              />
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="border p-3 rounded w-full"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                minLength={6}
               />
               <button
                 type="submit"

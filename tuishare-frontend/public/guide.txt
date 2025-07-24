@@ -1,0 +1,58 @@
+# Tuishare Plus Quick Start Guide
+
+Welcome to Tuishare Plus! This guide will help you get started quickly, even when you are offline.
+
+---
+
+## 1. What is Tuishare Plus?
+Tuishare Plus is a platform that empowers African students with seamless, secure, and accountable tuition payments. It connects supporters (parents, sponsors, guardians), students, and schools using modern Web3 technology.
+
+---
+
+## 2. Getting Started
+
+### Step 1: Choose Your Role
+- **Supporter**: Sponsor a student’s tuition.
+- **Student**: Receive tuition support.
+- **School**: Manage student records and receive payments.
+
+### Step 2: Register
+- Go to the homepage and select your role:
+  - **Register as Supporter**
+  - **Register as Student**
+  - **Register School**
+- Fill in the required information and submit the form.
+
+### Step 3: Log In
+- After registering, log in using your credentials.
+- Access your personalized dashboard.
+
+---
+
+## 3. Platform Features
+- **For Supporters**: Support students, track your impact, and receive digital proof of contributions.
+- **For Students**: Manage tuition, access your virtual card, and educational resources.
+- **For Schools**: Receive secure payments, confirm tuition, and manage records.
+
+---
+
+## 4. Web3 Basics
+- Web3 uses blockchain to provide more privacy, security, and control.
+- No single company controls your data.
+- For more info, visit: https://ethereum.org/en/web3/
+
+---
+
+## 5. Need Help?
+- Use the chatbot assistant on the website for navigation and questions.
+- Contact support: info@tuishare.com
+
+---
+
+## 6. Offline Tips
+- Save this guide for reference when you don’t have internet access.
+- For registration and login, you’ll need to be online.
+
+---
+
+Thank you for using Tuishare Plus!

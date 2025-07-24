@@ -1,0 +1,13 @@
+.cool-warm-gradient {
+  /* Fallback solid color for older browsers */
+  background-color: #3b82f6; /* blue-500 */
+
+  /* Gradient: blue (cool) to yellow (warm) */
+  background-image: linear-gradient(90deg, #3b82f6 0%, #fbbf24 100%);
+  /* Example 2: green to red (uncomment to use)
+  background-image: linear-gradient(90deg, #10b981 0%, #ef4444 100%);
+  */
+
+  /* Ensure good contrast for white or dark text */
+  color: #fff; /* Use #222 for dark text if needed */
+}
