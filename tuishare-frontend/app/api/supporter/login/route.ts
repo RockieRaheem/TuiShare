@@ -1,24 +1,50 @@
 import { NextResponse } from "next/server";
-
-// Simulated in-memory database
-const supporters: { email: string }[] = [];
+import { supporterAPI } from "@/lib/hybridDB";
 
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  try {
+    const { email, password } = await request.json();
 
-  if (!email || !password) {
+    if (!email || !password) {
+      return NextResponse.json({
+        success: false,
+        message: "Please enter both email and password.",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({
+        success: false,
+        message: "Please enter a valid email address.",
+      });
+    }
+
+    // Authenticate supporter
+    const supporter = await supporterAPI.authenticate(email, password);
+    
+    if (!supporter) {
+      return NextResponse.json({
+        success: false,
+        message: "No account found with this email. Please register first or check your email address.",
+      });
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: "Login successful! Welcome to your supporter dashboard.",
+      user: { 
+        id: supporter.id, 
+        email: supporter.email, 
+        name: supporter.fullName
+      }
+    });
+  } catch (error) {
+    console.error('Supporter login error:', error);
     return NextResponse.json({
       success: false,
-      message: "Email and password are required.",
+      message: "Something went wrong during login. Please try again.",
     });
   }
-
-  if (!supporters.some((s) => s.email === email)) {
-    return NextResponse.json({
-      success: false,
-      message: "No account found. Please sign up first.",
-    });
-  }
-
-  return NextResponse.json({ success: true, message: "Login successful!" });
 }

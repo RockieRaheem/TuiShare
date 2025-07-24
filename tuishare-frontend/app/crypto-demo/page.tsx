@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import CryptoPayment from '../../components/CryptoPayment';
+import LandingNavbar from '../../components/LandingNavbar';
 import Link from 'next/link';
 
 interface Student {
@@ -116,13 +117,23 @@ export default function CryptoDemo() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 pt-20">
+      <LandingNavbar />
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
           <Link href="/" className="text-blue-600 hover:text-blue-800 mb-4 inline-block">
             ← Back to Home
           </Link>
+          <div className="mb-4">
+            <Link 
+              href="/showcase"
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg mr-4"
+            >
+              🎯 Full Platform Demo
+            </Link>
+            <span className="text-sm text-gray-600">Complete stakeholder experience</span>
+          </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-4">
             🌍 TuiShare Crypto Demo
           </h1>

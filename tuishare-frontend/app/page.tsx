@@ -145,6 +145,19 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Showcase CTA */}
+            <div className="text-center mb-8">
+              <Link 
+                href="/showcase"
+                className="inline-block bg-gradient-to-r from-orange-600 to-yellow-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:from-orange-700 hover:to-yellow-700 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                🎯 See Complete TuiShare Demo
+              </Link>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                Experience all 3 stakeholders + live crypto payments
+              </p>
+            </div>
+
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl">
               <h4 className="text-xl font-semibold mb-3">🚀 Why This Matters for African Education</h4>
               <div className="grid md:grid-cols-3 gap-4 text-sm mb-4">

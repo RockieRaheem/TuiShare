@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
 import Toast from "@/components/Toast";
 import Link from "next/link";
@@ -48,51 +48,96 @@ export default function SchoolLogin() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground font-sans pt-20">
-      <Navbar />
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-100 flex flex-col pt-20">
+      <LandingNavbar />
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
         {toast && <Toast message={toast.message} type={toast.type} />}
-        <div className="w-full max-w-xl bg-white rounded-lg shadow p-12">
-          <h2 className="text-3xl font-bold mb-4 text-center text-yellow-600">
-            School Login
-          </h2>
-          {loading ? (
-            <Spinner />
-          ) : (
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                className="border p-3 rounded w-full"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                className="border p-3 rounded w-full"
-                value={form.password}
-                onChange={handleChange}
-                required
-              />
+        
+        <div className="w-full max-w-lg">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <span className="text-3xl">🏫</span>
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">School Portal</h1>
+            <p className="text-lg text-gray-600">Access your institution dashboard</p>
+          </div>
+
+          {/* Login Form */}
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">School Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-green-500 focus:bg-white transition-all duration-300 text-gray-900"
+                  placeholder="admin@school.edu"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-green-500 focus:bg-white transition-all duration-300 text-gray-900"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+
               <button
                 type="submit"
-                className="py-3 px-6 rounded bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition w-full"
                 disabled={loading}
+                className="w-full bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 text-white py-4 px-8 rounded-2xl font-bold text-lg hover:from-green-700 hover:via-emerald-700 hover:to-green-800 transform hover:scale-[1.02] transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                {loading ? "Logging in..." : "Login"}
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <Spinner />
+                    <span>Signing In...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-3">
+                    <span>🏫</span>
+                    <span>Access Dashboard</span>
+                  </div>
+                )}
               </button>
+
+              <div className="text-center pt-4">
+                <p className="text-gray-600">
+                  New institution?{" "}
+                  <Link href="/school/register" className="text-green-600 hover:text-green-800 font-semibold transition-colors">
+                    Register here
+                  </Link>
+                </p>
+              </div>
             </form>
-          )}
-          <Link
-            href="/school/register"
-            className="mt-4 text-yellow-600 hover:underline text-center block"
-          >
-            Don&apos;t have an account? Sign up
-          </Link>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-2 gap-4 mt-8">
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+                <span className="text-xl text-white">💰</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Payments</h3>
+              <p className="text-sm text-gray-600">Track tuition payments</p>
+            </div>
+            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
+                <span className="text-xl text-white">📊</span>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-1">Analytics</h3>
+              <p className="text-sm text-gray-600">Student management</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
