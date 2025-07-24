@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
 import Toast from "@/components/Toast";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
 
 export default function StudentLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,6 +15,25 @@ export default function StudentLogin() {
     type?: "success" | "error";
   } | null>(null);
   const router = useRouter();
+  const { login, user, isLoading } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!isLoading && user) {
+      if (user.type === "student") {
+        router.push("/student/dashboard");
+      } else {
+        // Redirect to appropriate dashboard for other user types
+        const dashboardRoute =
+          user.type === "school"
+            ? "/school/dashboard"
+            : user.type === "supporter"
+            ? "/supporter/dashboard"
+            : "/dashboard";
+        router.push(dashboardRoute);
+      }
+    }
+  }, [user, isLoading, router]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,9 +51,25 @@ export default function StudentLogin() {
         body: JSON.stringify(form),
       });
       const result = await res.json();
+
       if (result.success) {
         setToast({ message: result.message, type: "success" });
+
+        // Store user data in auth context
+        const userData = {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.name,
+          type: "student" as const,
+          schoolName: result.user.schoolName,
+          fullName: result.user.name,
+        };
+
+        login(userData);
+
         setForm({ email: "", password: "" });
+
+        // Redirect to student dashboard
         setTimeout(() => {
           router.push("/student/dashboard");
         }, 1000);
@@ -47,10 +83,22 @@ export default function StudentLogin() {
     }
   }
 
+  // Show loading while checking auth state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-800">Loading...</h2>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 flex flex-col pt-20">
       <LandingNavbar />
-      
+
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-lg">
           {/* Header */}
@@ -58,15 +106,21 @@ export default function StudentLogin() {
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-3xl">👩‍🎓</span>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-lg text-gray-600">Sign in to your student account</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h1>
+            <p className="text-lg text-gray-600">
+              Sign in to your student account
+            </p>
           </div>
 
           {/* Login Form */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Email Address</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -79,7 +133,9 @@ export default function StudentLogin() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Password</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Password
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -111,8 +167,11 @@ export default function StudentLogin() {
 
               <div className="text-center pt-4">
                 <p className="text-gray-600">
-                  Don't have an account?{" "}
-                  <Link href="/student/register" className="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                  Don&apos;t have an account?{" "}
+                  <Link
+                    href="/student/register"
+                    className="text-blue-600 hover:text-blue-800 font-semibold transition-colors"
+                  >
                     Create one here
                   </Link>
                 </p>
@@ -140,12 +199,7 @@ export default function StudentLogin() {
         </div>
       </div>
 
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} />}
     </div>
   );
 }

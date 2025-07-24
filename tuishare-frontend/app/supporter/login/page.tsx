@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
@@ -14,6 +15,7 @@ export default function SupporterLogin() {
     type?: "success" | "error";
   } | null>(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,7 +33,8 @@ export default function SupporterLogin() {
         body: JSON.stringify(form),
       });
       const result = await res.json();
-      if (result.success) {
+      if (result.success && result.user) {
+        login(result.user);
         setToast({ message: result.message, type: "success" });
         setForm({ email: "", password: "" });
         setTimeout(() => {
@@ -52,14 +55,16 @@ export default function SupporterLogin() {
       <LandingNavbar />
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         {toast && <Toast message={toast.message} type={toast.type} />}
-        
+
         <div className="w-full max-w-lg">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-3xl">🤝</span>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              Welcome Back
+            </h1>
             <p className="text-lg text-gray-600">Sign in to support students</p>
           </div>
 
@@ -67,7 +72,9 @@ export default function SupporterLogin() {
           <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Email Address</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -80,7 +87,9 @@ export default function SupporterLogin() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Password</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Password
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -113,7 +122,10 @@ export default function SupporterLogin() {
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   New supporter?{" "}
-                  <Link href="/supporter/register" className="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
+                  <Link
+                    href="/supporter/register"
+                    className="text-purple-600 hover:text-purple-800 font-semibold transition-colors"
+                  >
                     Join us here
                   </Link>
                 </p>

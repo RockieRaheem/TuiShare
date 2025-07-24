@@ -1,9 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
-import { studentAPI } from "@/lib/hybridDB";
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+
+const uri =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://kamwangaraheem2050:<db_password>@tuisharecluster.1vpetcg.mongodb.net/tuishare?retryWrites=true&w=majority";
+mongoose.connect(uri);
+
+const studentSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+  fullName: String,
+  schoolId: String,
+  schoolName: String,
+  password: String,
+  course: String,
+  story: String,
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Student =
+  mongoose.models.Student || mongoose.model("Student", studentSchema);
 
 export async function POST(request: Request) {
   try {
-    const { fullName, email, schoolId, schoolName, password, course, story } = await request.json();
+    const { fullName, email, schoolId, schoolName, password, course, story } =
+      await request.json();
 
     if (!fullName || !email || !schoolId || !schoolName || !password) {
       return NextResponse.json({
@@ -30,39 +50,46 @@ export async function POST(request: Request) {
     }
 
     // Check if student already exists
-    if (await studentAPI.exists(email)) {
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) {
       return NextResponse.json({
         success: false,
-        message: "An account with this email already exists. Please use a different email or try logging in.",
+        message:
+          "An account with this email already exists. Please use a different email or try logging in.",
       });
     }
 
     // Create new student record
-    console.log('Creating student with data:', { email, fullName, schoolId, schoolName });
-    const newStudent = await studentAPI.create({
+    const newStudent = await Student.create({
       email,
       fullName,
       schoolId,
       schoolName,
       password,
-      course: course || '',
-      story: story || ''
+      course: course || "",
+      story: story || "",
     });
 
-    console.log('New student registered:', { email: newStudent.email, name: newStudent.fullName, id: newStudent.id });
+    if (!newStudent) {
+      return NextResponse.json({
+        success: false,
+        message: "Failed to create student account. Please try again.",
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Registration successful! You can now sign in to access your dashboard.",
-      user: { 
-        id: newStudent.id, 
-        email: newStudent.email, 
+      message: "Account created successfully! Welcome to TuiShare.",
+      user: {
+        id: newStudent._id,
+        email: newStudent.email,
         name: newStudent.fullName,
-        schoolName: newStudent.schoolName
-      }
+        fullName: newStudent.fullName,
+        schoolName: newStudent.schoolName,
+      },
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
     return NextResponse.json({
       success: false,
       message: "Something went wrong during registration. Please try again.",

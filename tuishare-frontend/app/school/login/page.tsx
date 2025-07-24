@@ -5,6 +5,7 @@ import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
 import Toast from "@/components/Toast";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
 
 export default function SchoolLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,6 +15,7 @@ export default function SchoolLogin() {
     type?: "success" | "error";
   } | null>(null);
   const router = useRouter();
+  const { login } = useAuth();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,7 +33,9 @@ export default function SchoolLogin() {
         body: JSON.stringify(form),
       });
       const result = await res.json();
-      if (result.success) {
+      if (result.success && result.user) {
+        // Use auth context to login
+        login(result.user);
         setToast({ message: result.message, type: "success" });
         setForm({ email: "", password: "" });
         setTimeout(() => {
@@ -52,22 +56,28 @@ export default function SchoolLogin() {
       <LandingNavbar />
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         {toast && <Toast message={toast.message} type={toast.type} />}
-        
+
         <div className="w-full max-w-lg">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-3xl">🏫</span>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">School Portal</h1>
-            <p className="text-lg text-gray-600">Access your institution dashboard</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              School Portal
+            </h1>
+            <p className="text-lg text-gray-600">
+              Access your institution dashboard
+            </p>
           </div>
 
           {/* Login Form */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">School Email</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  School Email
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -80,7 +90,9 @@ export default function SchoolLogin() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Password</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Password
+                </label>
                 <input
                   type="password"
                   name="password"
@@ -113,7 +125,10 @@ export default function SchoolLogin() {
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   New institution?{" "}
-                  <Link href="/school/register" className="text-green-600 hover:text-green-800 font-semibold transition-colors">
+                  <Link
+                    href="/school/register"
+                    className="text-green-600 hover:text-green-800 font-semibold transition-colors"
+                  >
                     Register here
                   </Link>
                 </p>

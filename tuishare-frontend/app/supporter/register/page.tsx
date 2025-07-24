@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
 import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
 import Toast from "@/components/Toast";
@@ -13,6 +14,7 @@ export default function SupporterRegister() {
     password: "",
     confirmPassword: "",
   });
+  const { login } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
@@ -55,14 +57,15 @@ export default function SupporterRegister() {
     setToast(null);
 
     try {
-      const { confirmPassword, ...submitForm } = form;
+      const { confirmPassword, ...submitForm } = form; // confirmPassword is only used for validation, not sent
       const res = await fetch("/api/supporter/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(submitForm),
       });
       const result = await res.json();
-      if (result.success) {
+      if (result.success && result.user) {
+        login(result.user);
         setSubmitted(true);
         setToast({ message: result.message, type: "success" });
         setForm({
@@ -90,14 +93,18 @@ export default function SupporterRegister() {
       <LandingNavbar />
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         {toast && <Toast message={toast.message} type={toast.type} />}
-        
+
         {/* Header Section */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
             <span className="text-3xl">🤝</span>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Become a Supporter</h1>
-          <p className="text-lg text-gray-600">Help students achieve their dreams with crypto donations</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Become a Supporter
+          </h1>
+          <p className="text-lg text-gray-600">
+            Help students achieve their dreams with crypto donations
+          </p>
         </div>
 
         {/* Registration Form */}
@@ -105,16 +112,23 @@ export default function SupporterRegister() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16">
               <Spinner />
-              <p className="mt-4 text-gray-600">Creating your supporter profile...</p>
+              <p className="mt-4 text-gray-600">
+                Creating your supporter profile...
+              </p>
             </div>
           ) : submitted ? (
             <div className="text-center py-16">
               <div className="w-16 h-16 mx-auto mb-4 bg-purple-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl text-white">✓</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank You for Joining!</h3>
-              <p className="text-gray-600 mb-6">Your supporter account has been created. Start making a difference in students' lives today.</p>
-              <Link 
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Thank You for Joining!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Your supporter account has been created. Start making a
+                difference in students&apos; lives today.
+              </p>
+              <Link
                 href="/supporter/login"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-2xl font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
               >
@@ -126,7 +140,9 @@ export default function SupporterRegister() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Full Name *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Full Name *
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -137,9 +153,11 @@ export default function SupporterRegister() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Email Address *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Email Address *
+                  </label>
                   <input
                     type="email"
                     name="email"
@@ -153,7 +171,9 @@ export default function SupporterRegister() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Country *</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Country *
+                </label>
                 <input
                   type="text"
                   name="country"
@@ -167,7 +187,9 @@ export default function SupporterRegister() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Password *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Password *
+                  </label>
                   <input
                     type="password"
                     name="password"
@@ -179,9 +201,11 @@ export default function SupporterRegister() {
                     minLength={6}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Confirm Password *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Confirm Password *
+                  </label>
                   <input
                     type="password"
                     name="confirmPassword"
@@ -216,7 +240,10 @@ export default function SupporterRegister() {
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   Already have an account?{" "}
-                  <Link href="/supporter/login" className="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
+                  <Link
+                    href="/supporter/login"
+                    className="text-purple-600 hover:text-purple-800 font-semibold transition-colors"
+                  >
                     Sign in here
                   </Link>
                 </p>
@@ -232,7 +259,9 @@ export default function SupporterRegister() {
               <span className="text-xl text-white">💝</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Make Impact</h3>
-            <p className="text-sm text-gray-600">Support students' education directly</p>
+            <p className="text-sm text-gray-600">
+              Support students&apos; education directly
+            </p>
           </div>
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
             <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center">
@@ -245,7 +274,9 @@ export default function SupporterRegister() {
             <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
               <span className="text-xl text-white">🔗</span>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Crypto Payments</h3>
+            <h3 className="font-semibold text-gray-900 mb-1">
+              Crypto Payments
+            </h3>
             <p className="text-sm text-gray-600">Use Bitcoin & USDT easily</p>
           </div>
         </div>

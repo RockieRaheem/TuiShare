@@ -1,5 +1,24 @@
-import { NextRequest, NextResponse } from "next/server";
-import { studentAPI } from "@/lib/hybridDB";
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+
+const uri =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://kamwangaraheem2050:<db_password>@tuisharecluster.1vpetcg.mongodb.net/tuishare?retryWrites=true&w=majority";
+mongoose.connect(uri);
+
+const studentSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+  fullName: String,
+  schoolId: String,
+  schoolName: String,
+  password: String,
+  course: String,
+  story: String,
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Student =
+  mongoose.models.Student || mongoose.model("Student", studentSchema);
 
 export async function POST(request: Request) {
   try {
@@ -22,33 +41,27 @@ export async function POST(request: Request) {
     }
 
     // Authenticate user
-    console.log('Attempting login for email:', email);
-    const user = await studentAPI.authenticate(email, password);
-    console.log('Authentication result:', user ? 'SUCCESS' : 'FAILED');
-    
+    const user = await Student.findOne({ email, password });
     if (!user) {
-      console.log('Login failed - checking if user exists');
-      const existingUser = await studentAPI.findByEmail(email);
-      console.log('User exists:', existingUser ? 'YES' : 'NO');
-      
       return NextResponse.json({
         success: false,
-        message: "Invalid email or password. Please check your credentials and try again.",
+        message:
+          "Invalid email or password. Please check your credentials and try again.",
       });
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: "Login successful! Welcome to your dashboard.",
-      user: { 
-        id: user.id, 
-        email: user.email, 
+      user: {
+        id: user.id,
+        email: user.email,
         name: user.fullName,
-        schoolName: user.schoolName
-      }
+        schoolName: user.schoolName,
+      },
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error("Login error:", error);
     return NextResponse.json({
       success: false,
       message: "Something went wrong during login. Please try again.",

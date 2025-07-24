@@ -5,6 +5,7 @@ import LandingNavbar from "@/components/LandingNavbar";
 import Spinner from "@/components/Spinner";
 import Toast from "@/components/Toast";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
 
 export default function SchoolRegister() {
   const [form, setForm] = useState({
@@ -16,6 +17,7 @@ export default function SchoolRegister() {
     confirmPassword: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
@@ -64,7 +66,8 @@ export default function SchoolRegister() {
         body: JSON.stringify(submitForm),
       });
       const result = await res.json();
-      if (result.success) {
+      if (result.success && result.user) {
+        login(result.user);
         setSubmitted(true);
         setToast({ message: result.message, type: "success" });
         setForm({
@@ -93,14 +96,18 @@ export default function SchoolRegister() {
       <LandingNavbar />
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-8">
         {toast && <Toast message={toast.message} type={toast.type} />}
-        
+
         {/* Header Section */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
             <span className="text-3xl">🏫</span>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Partner with TuiShare</h1>
-          <p className="text-lg text-gray-600">Register your institution and empower students</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Partner with TuiShare
+          </h1>
+          <p className="text-lg text-gray-600">
+            Register your institution and empower students
+          </p>
         </div>
 
         {/* Registration Form */}
@@ -115,9 +122,14 @@ export default function SchoolRegister() {
               <div className="w-16 h-16 mx-auto mb-4 bg-green-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl text-white">✓</span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Welcome to TuiShare!</h3>
-              <p className="text-gray-600 mb-6">Your school has been registered successfully. We'll contact you soon to complete the verification process.</p>
-              <Link 
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                Welcome to TuiShare!
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Your school has been registered successfully. We&apos;ll contact
+                you soon to complete the verification process.
+              </p>
+              <Link
                 href="/school/login"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-2xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
               >
@@ -129,7 +141,9 @@ export default function SchoolRegister() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">School Name *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    School Name *
+                  </label>
                   <input
                     type="text"
                     name="schoolName"
@@ -140,9 +154,11 @@ export default function SchoolRegister() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">School Email *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    School Email *
+                  </label>
                   <input
                     type="email"
                     name="schoolEmail"
@@ -156,7 +172,9 @@ export default function SchoolRegister() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">School Address *</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  School Address *
+                </label>
                 <input
                   type="text"
                   name="schoolAddress"
@@ -169,7 +187,9 @@ export default function SchoolRegister() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Contact Person *</label>
+                <label className="text-sm font-semibold text-gray-700">
+                  Contact Person *
+                </label>
                 <input
                   type="text"
                   name="contactPerson"
@@ -183,7 +203,9 @@ export default function SchoolRegister() {
 
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Password *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Password *
+                  </label>
                   <input
                     type="password"
                     name="password"
@@ -195,9 +217,11 @@ export default function SchoolRegister() {
                     minLength={6}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Confirm Password *</label>
+                  <label className="text-sm font-semibold text-gray-700">
+                    Confirm Password *
+                  </label>
                   <input
                     type="password"
                     name="confirmPassword"
@@ -232,7 +256,10 @@ export default function SchoolRegister() {
               <div className="text-center pt-4">
                 <p className="text-gray-600">
                   Already registered?{" "}
-                  <Link href="/school/login" className="text-green-600 hover:text-green-800 font-semibold transition-colors">
+                  <Link
+                    href="/school/login"
+                    className="text-green-600 hover:text-green-800 font-semibold transition-colors"
+                  >
                     Sign in here
                   </Link>
                 </p>
@@ -247,8 +274,12 @@ export default function SchoolRegister() {
             <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
               <span className="text-xl text-white">💰</span>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Secure Payments</h3>
-            <p className="text-sm text-gray-600">Receive tuition via crypto instantly</p>
+            <h3 className="font-semibold text-gray-900 mb-1">
+              Secure Payments
+            </h3>
+            <p className="text-sm text-gray-600">
+              Receive tuition via crypto instantly
+            </p>
           </div>
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
             <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
@@ -262,7 +293,9 @@ export default function SchoolRegister() {
               <span className="text-xl text-white">🌍</span>
             </div>
             <h3 className="font-semibold text-gray-900 mb-1">Global Reach</h3>
-            <p className="text-sm text-gray-600">Connect worldwide supporters</p>
+            <p className="text-sm text-gray-600">
+              Connect worldwide supporters
+            </p>
           </div>
         </div>
       </div>

@@ -1,11 +1,34 @@
-import { NextRequest, NextResponse } from "next/server";
-import { schoolAPI } from "@/lib/hybridDB";
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+
+const uri =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://kamwangaraheem2050:<db_password>@tuisharecluster.1vpetcg.mongodb.net/tuishare?retryWrites=true&w=majority";
+mongoose.connect(uri);
+
+const schoolSchema = new mongoose.Schema({
+  schoolName: String,
+  schoolEmail: { type: String, unique: true },
+  schoolAddress: String,
+  contactPerson: String,
+  password: String,
+  createdAt: { type: Date, default: Date.now },
+});
+
+const School = mongoose.models.School || mongoose.model("School", schoolSchema);
 
 export async function POST(request: Request) {
   try {
-    const { schoolName, schoolEmail, schoolAddress, contactPerson, password } = await request.json();
+    const { schoolName, schoolEmail, schoolAddress, contactPerson, password } =
+      await request.json();
 
-    if (!schoolName || !schoolEmail || !schoolAddress || !contactPerson || !password) {
+    if (
+      !schoolName ||
+      !schoolEmail ||
+      !schoolAddress ||
+      !contactPerson ||
+      !password
+    ) {
       return NextResponse.json({
         success: false,
         message: "All required fields must be filled.",
@@ -30,35 +53,44 @@ export async function POST(request: Request) {
     }
 
     // Check if school already exists
-    if (await schoolAPI.exists(schoolEmail)) {
+    const existingSchool = await School.findOne({ schoolEmail });
+    if (existingSchool) {
       return NextResponse.json({
         success: false,
-        message: "An account with this email already exists. Please use a different email or try logging in.",
+        message:
+          "An account with this email already exists. Please use a different email or try logging in.",
       });
     }
 
     // Create new school record
-    const newSchool = await schoolAPI.create({
-      email: schoolEmail,
+    const newSchool = await School.create({
       schoolName,
+      schoolEmail,
       schoolAddress,
       contactPerson,
-      password
+      password,
     });
 
-    console.log('New school registered:', { email: newSchool.email, name: newSchool.schoolName });
+    if (!newSchool) {
+      return NextResponse.json({
+        success: false,
+        message: "Failed to create school account. Please try again.",
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: "School registration successful! You can now sign in to access your dashboard.",
-      user: { 
-        id: newSchool.id, 
-        email: newSchool.email, 
-        name: newSchool.schoolName
-      }
+      message: "Account created successfully! Welcome to TuiShare.",
+      user: {
+        id: newSchool._id,
+        schoolEmail: newSchool.schoolEmail,
+        schoolName: newSchool.schoolName,
+        schoolAddress: newSchool.schoolAddress,
+        contactPerson: newSchool.contactPerson,
+      },
     });
   } catch (error) {
-    console.error('School registration error:', error);
+    console.error("School registration error:", error);
     return NextResponse.json({
       success: false,
       message: "Something went wrong during registration. Please try again.",
