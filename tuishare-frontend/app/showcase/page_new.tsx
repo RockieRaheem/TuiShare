@@ -491,12 +491,9 @@ export default function Showcase() {
           </div>
 
           <CryptoPayment
-            studentId={selectedStudent.id}
             onPaymentSuccess={handlePaymentSuccess}
             studentName={selectedStudent.name}
-            tuitionAmount={
-              selectedStudent.tuitionNeeded - selectedStudent.raised
-            }
+            amount={selectedStudent.tuitionNeeded - selectedStudent.raised}
           />
         </div>
       </div>
